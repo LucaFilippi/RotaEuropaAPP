@@ -166,6 +166,30 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         }
     }
 
+    suspend fun mergeFromJsonBackup(json: String) {
+        val parsed = parseBackup(json)
+        database.withTransaction {
+            val firstNewId = (scenarioDao.maxId() ?: 0L) + 1L
+            val scenarioIdMap = parsed.scenarios.mapIndexed { index, scenario -> scenario.id to firstNewId + index }.toMap()
+            parsed.scenarios.forEach { scenario ->
+                scenarioDao.save(scenario.copy(id = scenarioIdMap.getValue(scenario.id), active = false))
+            }
+            phaseDao.insertAll(parsed.phases.map { phase -> phase.copy(id = 0L, scenarioId = scenarioIdMap.getValue(phase.scenarioId)) })
+            val phaseIdMap = parsed.phases.associate { source ->
+                val newScenarioId = scenarioIdMap.getValue(source.scenarioId)
+                val created = phaseDao.getForScenario(newScenarioId).first { it.name == source.name && it.order == source.order }
+                source.id to created.id
+            }
+            parsed.tasks.forEach { task -> taskDao.save(task.copy(id = 0L, scenarioId = scenarioIdMap.getValue(task.scenarioId), phaseId = phaseIdMap.getValue(task.phaseId))) }
+            parsed.reserves.forEach { reserve -> reserveDao.save(reserve.copy(scenarioId = scenarioIdMap.getValue(reserve.scenarioId))) }
+            parsed.transactions.forEach { item -> transactionDao.save(item.copy(id = 0L, scenarioId = scenarioIdMap.getValue(item.scenarioId))) }
+            parsed.budget.forEach { item -> budgetDao.save(item.copy(id = 0L, scenarioId = scenarioIdMap.getValue(item.scenarioId))) }
+            parsed.exchangeRates.forEach { item -> exchangeRateDao.save(item.copy(id = 0L, scenarioId = scenarioIdMap.getValue(item.scenarioId))) }
+            parsed.records.forEach { journeyRecordDao.save(it.copy(id = 0L)) }
+            parsed.reviews.forEach { quarterlyReviewDao.save(it.copy(id = 0L)) }
+        }
+    }
+
     private data class ParsedBackup(
         val scenarios: List<MigrationScenarioEntity>, val phases: List<PlanPhaseEntity>, val tasks: List<PlanTaskEntity>,
         val reserves: List<FinancialReserveEntity>, val transactions: List<FinancialTransactionEntity>, val budget: List<BudgetItemEntity>,
@@ -182,7 +206,7 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         require(scenarios.isNotEmpty() && scenarios.all { it.id > 0 && it.name.isNotBlank() } && scenarios.map { it.id }.distinct().size == scenarios.size && scenarios.count { it.active } == 1) { "A lista de cenários do backup é inválida." }
         val scenarioIds = scenarios.map { it.id }.toSet()
         val phases = rows("phases").objects().map { PlanPhaseEntity(it.getLong("id"), it.getLong("scenarioId"), it.getString("name"), it.getInt("order")) }
-        require(phases.isNotEmpty() && phases.all { it.scenarioId in scenarioIds && it.id > 0 && it.name.isNotBlank() } && phases.map { it.id }.distinct().size == phases.size) { "As fases do backup são inválidas." }
+        require(phases.isNotEmpty() && phases.all { it.scenarioId in scenarioIds && it.id > 0 && it.name.isNotBlank() } && phases.map { it.id }.distinct().size == phases.size && phases.map { Triple(it.scenarioId, it.name, it.order) }.distinct().size == phases.size) { "As fases do backup são inválidas." }
         val phaseIds = phases.map { it.id }.toSet()
         val tasks = rows("tasks").objects().map {
             val status = it.getString("status"); val priority = it.getString("priority")

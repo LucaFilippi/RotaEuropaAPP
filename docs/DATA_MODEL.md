@@ -12,9 +12,9 @@ O banco Room v2 mantém as entidades do MVP e adiciona transações, custos, cot
 - **FinancialTransaction**: `id`, cenário, valor inteiro em unidade menor, moeda original, tipo (aporte/retirada), data e observação. Não somar moedas diferentes sem taxa explícita.
 - **ExchangeRate** (fase 2): cotação manual BRL/EUR, data, origem e observação.
 - **BudgetItem**: nome, categoria, valor em unidade mínima, moeda e recorrência.
-- **JourneyRecord**: tipo, título, detalhes, status, prazo e atualização; atende provisoriamente carreira, estudos, universidades, documentos e destinos até existirem campos especializados.
+- **JourneyRecord**: tipo, título, campos específicos serializados como linhas rotuladas em `details`, status, prazo e atualização; formulários distintos cobrem carreira, desenvolvimento, projetos, estudo, universidades, candidaturas, documentos, destinos e lembretes.
 - **QuarterlyReview**: data, respostas, risco e prioridades futuras.
-- **Backup JSON v1**: envelope com versão/formato e arrays de entidades; importação valida relações e valores de todos os cenários antes de substituir. CSV exporta tarefas, transações e custos.
+- **Backup JSON v1**: envelope com versão/formato e arrays de entidades; importação valida relações e valores antes de substituir ou mesclar. Na mesclagem, cenários recebem IDs novos e os dados existentes são preservados. CSV exporta tarefas, transações e custos.
 
 ## Integridade e tipos
 

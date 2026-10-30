@@ -44,7 +44,7 @@ abstract class RotaEuropaDatabase : RoomDatabase() {
             ).addMigrations(MIGRATION_1_2).build().also { instance = it }
         }
 
-        private val MIGRATION_1_2 = object : Migration(1, 2) {
+        internal val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("CREATE TABLE IF NOT EXISTS financial_transactions (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, scenarioId INTEGER NOT NULL, amountMinor INTEGER NOT NULL, currency TEXT NOT NULL, kind TEXT NOT NULL, occurredAtEpochDay INTEGER NOT NULL, note TEXT NOT NULL, FOREIGN KEY(scenarioId) REFERENCES migration_scenarios(id) ON UPDATE NO ACTION ON DELETE CASCADE)")
                 db.execSQL("CREATE INDEX IF NOT EXISTS index_financial_transactions_scenarioId ON financial_transactions(scenarioId)")

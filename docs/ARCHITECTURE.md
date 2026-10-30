@@ -13,11 +13,11 @@ Manter separação simples por responsabilidade:
 - `data`: entidades Room, DAOs, banco e repositórios que expõem Flow.
 - `core`: formatação/validação compartilhada apenas quando houver reutilização real.
 
-Room é a fonte de verdade para tarefas, fases, cenários independentes, reserva por cenário, transações, custos, cotações manuais, registros de planejamento e revisões. DataStore fica limitado à preferência de tema. A base foi elevada para v2 por migração explícita. Cenários usam a tabela existente e mantêm dados de tarefa e finanças separados por `scenarioId`. Cálculos de domínio não dependem de Compose nem Android. JSON e CSV são exportados por seletores de documentos do Android; a importação substitui dados somente após validar e confirmar e aceita múltiplos cenários.
+Room é a fonte de verdade para tarefas, fases, cenários independentes, reserva por cenário, transações, custos, cotações manuais, registros de planejamento e revisões. DataStore fica limitado à preferência de tema. A base foi elevada para v2 por migração explícita. Cenários usam a tabela existente e mantêm dados de tarefa e finanças separados por `scenarioId`. Formulários de carreira, estudo, universidades e documentos guardam campos rotulados em `journey_records.details`, preservando dados existentes sem nova migração. Lembretes usam `AlarmManager` e um `BroadcastReceiver` locais, sem conexão à rede. Cálculos de domínio não dependem de Compose nem Android. JSON e CSV são exportados por seletores de documentos do Android; a importação pode substituir ou mesclar após validação e confirmação.
 
 ## Navegação
 
-Destinos disponíveis: Visão geral, Plano, Finanças, Mais e Ajustes. A tela Mais usa um tipo de registro flexível para as áreas ainda em evolução; os formulários especializados continuam pendentes.
+Destinos disponíveis: Visão geral, Plano, Finanças, Mais e Ajustes. A tela Mais oferece cadastros com formulários por área, Kanban de projetos, revisões, relatórios, lembretes e backup.
 
 ## Dependências
 

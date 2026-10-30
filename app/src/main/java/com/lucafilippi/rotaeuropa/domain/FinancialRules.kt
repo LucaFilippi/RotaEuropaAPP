@@ -89,13 +89,16 @@ val budgetCategories = listOf(
 
 val journeyRecordTypes = listOf(
     "Experiência profissional" to "experience",
+    "Experiência em desenvolvimento" to "dev_experience",
     "Projeto de portfólio" to "project",
     "Formação acadêmica" to "education",
     "Idioma" to "language",
+    "Plano de estudos" to "study_plan",
     "Certificação" to "certification",
     "Universidade" to "university",
     "Candidatura" to "application",
     "Documento" to "document",
     "Comparação de destino" to "destination",
     "Marco" to "milestone",
+    "Lembrete local" to "reminder",
 )

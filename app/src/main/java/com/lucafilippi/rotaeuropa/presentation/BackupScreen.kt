@@ -29,6 +29,7 @@ fun BackupScreen(viewModel: RotaEuropaViewModel, onNavigateBack: () -> Unit) {
     val context = LocalContext.current
     var output by remember { mutableStateOf<String?>(null) }
     var pendingImport by remember { mutableStateOf<String?>(null) }
+    var mergeImport by remember { mutableStateOf(false) }
     var status by remember { mutableStateOf("") }
 
     val jsonExporter = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
@@ -66,7 +67,8 @@ fun BackupScreen(viewModel: RotaEuropaViewModel, onNavigateBack: () -> Unit) {
                 Text("Backup completo", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Text("Inclui tarefas, fases, reserva, movimentações, orçamento, cotação, registros e revisões.", style = MaterialTheme.typography.bodyMedium)
                 Button(onClick = { viewModel.createJsonBackup { content -> output = content; jsonExporter.launch("ROTA-EUROPA-backup.json") } }, modifier = Modifier.fillMaxWidth()) { Text("Exportar backup JSON") }
-                OutlinedButton(onClick = { importer.launch(arrayOf("application/json", "text/*")) }, modifier = Modifier.fillMaxWidth()) { Text("Importar backup JSON") }
+                OutlinedButton(onClick = { mergeImport = false; importer.launch(arrayOf("application/json", "text/*")) }, modifier = Modifier.fillMaxWidth()) { Text("Substituir dados por backup JSON") }
+                OutlinedButton(onClick = { mergeImport = true; importer.launch(arrayOf("application/json", "text/*")) }, modifier = Modifier.fillMaxWidth()) { Text("Mesclar backup aos dados atuais") }
             }
         }
         Card {
@@ -83,9 +85,9 @@ fun BackupScreen(viewModel: RotaEuropaViewModel, onNavigateBack: () -> Unit) {
     pendingImport?.let { backup ->
         AlertDialog(
             onDismissRequest = { pendingImport = null },
-            title = { Text("Substituir dados atuais?") },
-            text = { Text("A importação validará o arquivo e, se estiver íntegro, substituirá os dados locais por este backup. Salve um backup atual antes de continuar. Nenhum dado será substituído sem esta confirmação.") },
-            confirmButton = { TextButton(onClick = { viewModel.importJsonBackup(backup); pendingImport = null; status = "Importação solicitada. Confira a mensagem de resultado." }) { Text("Substituir e importar") } },
+            title = { Text(if (mergeImport) "Mesclar este backup?" else "Substituir dados atuais?") },
+            text = { Text(if (mergeImport) "Os cenários e registros deste backup serão adicionados aos dados atuais, com novos identificadores; nada será removido." else "A importação validará o arquivo e, se estiver íntegro, substituirá os dados locais por este backup. Salve uma cópia atual antes de continuar.") },
+            confirmButton = { TextButton(onClick = { if (mergeImport) viewModel.mergeJsonBackup(backup) else viewModel.importJsonBackup(backup); pendingImport = null; status = if (mergeImport) "Mesclagem solicitada. Confira a mensagem de resultado." else "Importação solicitada. Confira a mensagem de resultado." }) { Text(if (mergeImport) "Mesclar backup" else "Substituir e importar") } },
             dismissButton = { TextButton(onClick = { pendingImport = null }) { Text("Cancelar") } },
         )
     }

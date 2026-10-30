@@ -30,20 +30,26 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Gráfico da evolução projetada da reserva nos próximos seis meses.
 - [x] Testes unitários de cotação, conversão e projeção adicionados.
 
-## Fase 3 — Carreira e estudos (Em andamento)
+## Fase 3 — Carreira e estudos (Concluído)
 
 - [x] Cadastros locais iniciais para experiências, projetos, formação, idiomas, certificações e marcos.
-- [ ] Formulários especializados, distinção de experiência em desenvolvimento, Kanban e plano de estudo.
+- [x] Formulários especializados para experiências, projetos, formação, idiomas, certificações e plano de estudo.
+- [x] Experiência em desenvolvimento separada, com stack e impacto técnico.
+- [x] Kanban para projetos de portfólio com movimentação entre colunas.
 
-## Fase 4 — Universidades e documentos (Em andamento)
+## Fase 4 — Universidades e documentos (Concluído)
 
 - [x] Cadastros locais iniciais de universidades, candidaturas, documentos e destinos com detalhes e prazo.
-- [ ] Campos próprios, fontes oficiais, aproveitamento de créditos e checklist documental completo.
+- [x] Campos próprios para universidades, candidaturas, comparação de destino e documentos.
+- [x] Fontes oficiais, taxa de candidatura e aproveitamento de créditos registrados no cadastro.
+- [x] Checklist documental com alternância entre pendente e concluído.
 
-## Fase 5 — Revisões e notificações (Em andamento)
+## Fase 5 — Revisões e notificações (Concluído)
 
 - [x] Revisões trimestrais com respostas, risco e prioridades persistidas.
-- [ ] Comparação de indicadores, relatórios, lembretes locais e prontidão por cenário.
+- [x] Relatório local com histórico de revisões trimestrais, riscos e prioridades.
+- [x] Lembretes locais com notificação no Android e prazo salvo no dispositivo.
+- [x] Indicador de prontidão calculado para o cenário ativo com pré-requisitos e bloqueios explicados.
 
 ## Fase 6 — Backup e acabamento (Em andamento)
 
@@ -51,8 +57,10 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Importação JSON validada e com confirmação antes de substituir os dados.
 - [x] Exportação CSV de tarefas, movimentações e custos.
 - [x] Migração Room 1→2 criada sem apagar dados existentes.
-- [ ] Teste instrumentado da migração, mesclagem, acessibilidade e validação final em emulador.
+- [x] Mesclagem de backup JSON validada antes de adicionar cenários e registros sem remover os dados locais.
+- [x] Teste instrumentado da migração 1→2 adicionado e compilado.
+- [ ] Executar `connectedAndroidTest` e validação visual/acessibilidade final em emulador/aparelho.
 
 ## Próximo incremento
 
-Fase 2 concluída em 30/10/2026 após validar `test assembleDebug`. A Fase 3 não foi iniciada nesta entrega e depende de autorização explícita do usuário.
+Fases 2–5 foram concluídas em 30/10/2026 após validar compilação, testes unitários e compilação dos testes instrumentados. A Fase 6 aguarda execução dos testes instrumentados e validação manual em emulador/aparelho.

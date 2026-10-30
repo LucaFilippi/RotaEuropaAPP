@@ -60,4 +60,15 @@ class PlanRulesTest {
         assertNull(parseMoneyToMinorUnits("12,345"))
         assertNull(parseMoneyToMinorUnits("abc"))
     }
+
+    @Test
+    fun readinessReportsMissingPrerequisitesAndReachesOneHundredWhenAllChecksPass() {
+        val pending = calculateReadiness(false, false, true, false, true, false, false)
+        assertEquals(20, pending.score)
+        assertEquals(4, pending.blockers.size)
+
+        val ready = calculateReadiness(true, true, true, true, true, true, true)
+        assertEquals(100, ready.score)
+        assertEquals(emptyList<String>(), ready.blockers)
+    }
 }
