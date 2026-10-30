@@ -1,13 +1,22 @@
 # Registro de sessões
 
+## 2026-10-30 — Fase 2: cenários financeiros e gráfico
+
+- **Objetivo:** concluir exclusivamente o planejamento financeiro (Fase 2), sem começar a Fase 3.
+- **Implementado:** criação/seleção de cenários financeiros persistidos com reserva, fases, tarefas, histórico, orçamento e cotação isolados por `scenarioId`; gráfico de projeção da reserva por seis meses; importação JSON com validação e restauração de múltiplos cenários; versão 1.2 / `versionCode 3`.
+- **Validação:** `test assembleDebug` passou (43 tarefas Gradle, incluindo testes unitários). `apksigner verify` passou e o certificado do APK 1.2 corresponde ao APK 1.1 (`7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`). O APK foi gerado como atualização compatível.
+- **Limitação:** teste manual de troca de cenários/backup e migração no emulador ou aparelho segue pendente porque não havia dispositivo ADB conectado e o emulador foi bloqueado pela sandbox.
+- **Escopo:** Fase 3 não foi iniciada; aguardar autorização do usuário.
+
 ## 2026-10-30 — Continuação das Fases 2–6, logo e conexão Git
 
 - **Objetivo:** continuar o app existente, manter possibilidade de atualização por cima do APK anterior, incorporar logo e salvar o progresso em branch remota.
 - **Implementado:** Room v2 com migração 1→2; histórico financeiro, orçamento em duas moedas, cotação manual e conversão explícita, projeção até a data-alvo; cadastros flexíveis de carreira/estudos/idiomas/universidades/documentos/destinos; revisão trimestral; backup JSON validado com confirmação; CSV de tarefas/finanças; logo no dashboard e ícone; versão 1.1 / `versionCode 2`.
 - **Validação registrada:** `test assembleDebug` passou antes do último pequeno ajuste de apresentação de conversão. `apksigner` confirmou que o APK anterior, o novo build e `C:\Users\user\.android\debug.keystore` têm o mesmo SHA-256 (`7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`). Ainda executar o build final após o último ajuste.
 - **Limitação desta sessão:** não foi possível iniciar o AVD Pixel 10 porque o sandbox negou escrita em `%USERPROFILE%\.android\emu-last-feature-flags.protobuf.lock`; teste da migração Room v1→v2 e inspeção manual ainda pendentes. O terminal usa o cache Gradle local `-g .gradle-user-home`.
-- **GitHub:** URL fornecida pelo usuário foi consultada com `git ls-remote`; o repositório não retornou branches. O projeto local ainda não tinha commits. Criar `origin`, estabelecer branch `develop` e publicar o incremento em `feature/fases-2-6`.
-- **Próximas ações:** build/testes finais, copiar APK 1.1 para `outputs`, commitar/push, manter o Android Studio apontado para a pasta correta quando a janela estiver disponível; retomar pela `docs/RETOMADA.md`.
+- **GitHub:** URL fornecida pelo usuário foi consultada com `git ls-remote`; o repositório estava sem refs. O root commit `a53d973` está em `develop`; a branch ativa `feature/fases-2-6` recebeu o commit de retomada. `origin` foi configurado e ambas as branches foram publicadas com tracking remoto.
+- **Build final:** `test assembleDebug` passou nesta sessão após o último ajuste; o APK 1.1 foi copiado para `C:\Users\user\Documents\Codex\2026-10-29\c\outputs\ROTA-EUROPA-1.1-debug.apk` e o alias `ROTA-EUROPA-debug.apk` também foi atualizado.
+- **Próximas ações:** configurar `origin` e push das duas branches; manter o Android Studio apontado para a pasta correta quando a janela estiver disponível; retomar pela `docs/RETOMADA.md`.
 
 ## 2026-10-29 — Fase 1: MVP funcional
 

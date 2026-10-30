@@ -11,23 +11,30 @@ Data de registro: 30/10/2026
 
 ## Estado salvo
 
-- Fases 0–1 funcionais.
-- Fases 2–6 têm incrementos locais descritos em `ROADMAP.md`; não estão todas concluídas.
+- Fases 0–2 concluídas no código local; fases 3–6 continuam fora do escopo desta entrega.
 - Logo do usuário em `app/src/main/res/drawable-nodpi/rota_europa_logo.png`.
 - Room v2 com migração explícita 1→2.
-- `versionCode=2`, `versionName=1.1`, `applicationId` preservado.
+- `versionCode=3`, `versionName=1.2`, `applicationId` preservado.
 - O certificado SHA-256 do APK anterior e do novo build foi comparado e é o mesmo: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`.
-- A branch local ainda deve ser criada/publicada nesta retomada: `develop` para integração e `feature/fases-2-6` para o trabalho em andamento. `git ls-remote` não encontrou refs remotas.
+- Branch de integração: `develop` (`a53d973`, baseline salvo).
+- Branch ativa: `feature/fases-2-6` (continuação desta entrega).
+- Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
+- Commit final da Fase 2 será registrado no fim desta sessão.
+- Build e testes unitários executados com sucesso após os últimos ajustes (`test assembleDebug`).
+- APK atualizado salvo em `C:\Users\user\Documents\Codex\2026-10-29\c\outputs\ROTA-EUROPA-1.2-debug.apk` e no alias `ROTA-EUROPA-debug.apk`.
+- SHA-256 do APK: `91507A127848324A9C514596D2DAFE83D1FA3CAD93CD93CE823EC53A125365AF`.
+- `apksigner verify` passou. A assinatura foi comparada com a versão anterior e com a chave debug local, preservando a possibilidade de atualização no mesmo aparelho.
+- SHA-256 do certificado: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543` (igual ao APK 1.1).
+- Fase 2 adicionou cenários financeiros locais isolados, gráfico de projeção de seis meses e backup JSON compatível com múltiplos cenários.
+- Fase 2 foi commitada em `feature/fases-2-6`, mesclada em `develop`, e `main` foi criada no estado integrado. Não iniciar Fase 3 sem autorização do usuário.
 
 ## Próximas ações prioritárias
 
-1. Executar `gradlew.bat -g .gradle-user-home test assembleDebug --console=plain --no-daemon` após os últimos ajustes.
-2. Copiar `app/build/outputs/apk/debug/app-debug.apk` para `outputs/ROTA-EUROPA-1.1-debug.apk`.
-3. Criar branch/commit e publicar a branch no remoto conforme pedido.
-4. Testar migração Room 1→2 e instalação de atualização no Pixel 10 ou celular conectado.
-5. Abrir a pasta específica do projeto no Android Studio se ainda estiver na tela errada.
-6. Continuar os itens pendentes da Fase 2 (cenários independentes/gráficos), Fases 3–4 (campos especializados), Fase 5 (notificações/prontidão) e Fase 6 (mesclagem/testes/acessibilidade).
+1. Instalar o APK 1.2 no Pixel 10 ou celular conectado e validar atualização sobre a versão existente.
+2. Testar cenários, backup e migração Room 1→2 com dados no dispositivo/emulador.
+3. Abrir no Android Studio a pasta específica do projeto caso ainda não esteja aberta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
+4. Não iniciar Fase 3 até autorização explícita do usuário.
 
 ## Limitação conhecida
 
-O emulador não iniciou nesta sessão: a sandbox bloqueou escrita em `%USERPROFILE%\.android\emu-last-feature-flags.protobuf.lock`. Não apagar `.android`, o AVD, o banco do app ou a chave de assinatura. A próxima execução pode solicitar acesso de escrita pontual à pasta do AVD/estado do emulador.
+O emulador não iniciou nesta sessão: a sandbox bloqueou escrita em `%USERPROFILE%\.android\emu-last-feature-flags.protobuf.lock`. `adb devices` não mostrou dispositivos conectados. A abertura do projeto na janela do Android Studio também não foi confirmada. Não apagar `.android`, o AVD, o banco do app ou a chave de assinatura. A próxima execução pode solicitar acesso de escrita pontual à pasta do AVD/estado do emulador.

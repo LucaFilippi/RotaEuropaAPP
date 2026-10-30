@@ -123,4 +123,6 @@ data class ScenarioItem(
     val name: String,
     val destination: String,
     val targetDateEpochDay: Long?,
+    val active: Boolean = true,
+    val id: Long = 1L,
 )

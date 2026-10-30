@@ -41,6 +41,7 @@ data class AppUiState(
     val phases: List<PlanPhaseItem> = emptyList(),
     val reserve: ReserveItem = ReserveItem(0, 0, 0, "EUR"),
     val scenario: ScenarioItem = ScenarioItem("Plano principal", "", null),
+    val scenarios: List<ScenarioItem> = emptyList(),
     val darkTheme: Boolean = false,
     val initialized: Boolean = false,
     val errorMessage: String? = null,
@@ -68,7 +69,9 @@ class RotaEuropaViewModel(
                 .onFailure { setError("Não foi possível preparar os dados locais: ${it.localizedMessage.orEmpty()}") }
             combine(repository.tasks, repository.phases, repository.reserve, repository.scenario, preferences.darkTheme) {
                     tasks, phases, reserve, scenario, darkTheme ->
-                AppUiState(tasks, phases, reserve, scenario, darkTheme, initialized = true, errorMessage = _uiState.value.errorMessage)
+                AppUiState(tasks = tasks, phases = phases, reserve = reserve, scenario = scenario, darkTheme = darkTheme, initialized = true, errorMessage = _uiState.value.errorMessage)
+            }.let { baseFlow ->
+                combine(baseFlow, repository.scenarios) { base, scenarios -> base.copy(scenarios = scenarios) }
             }.flatMapLatest { base ->
                 repository.extendedData.map { base.copy(extendedData = it) }
             }.collect { _uiState.value = it }
@@ -244,6 +247,16 @@ class RotaEuropaViewModel(
                 .onSuccess { clearError() }
                 .onFailure { setError("Não foi possível salvar a data-alvo.") }
         }
+    }
+
+    fun selectScenario(id: Long) {
+        viewModelScope.launch { runCatching { repository.selectScenario(id) }.onFailure { setError(it.message ?: "Não foi possível trocar de cenário.") } }
+    }
+
+    fun createScenario(name: String, destination: String, dateText: String) {
+        val date = if (dateText.isBlank()) null else runCatching { LocalDate.parse(dateText.trim(), dateFormatter).toEpochDay() }.getOrNull()
+            ?: if (dateText.isBlank()) null else return setError("Use uma data válida no formato DD/MM/AAAA.")
+        viewModelScope.launch { runCatching { repository.createScenario(name, destination, date) }.onSuccess { clearError() }.onFailure { setError(it.message ?: "Não foi possível criar o cenário.") } }
     }
 
     fun setDarkTheme(enabled: Boolean) {

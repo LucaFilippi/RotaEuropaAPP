@@ -13,7 +13,7 @@ Manter separação simples por responsabilidade:
 - `data`: entidades Room, DAOs, banco e repositórios que expõem Flow.
 - `core`: formatação/validação compartilhada apenas quando houver reutilização real.
 
-Room é a fonte de verdade para tarefas, fases, cenário, reserva, transações, custos, cotações manuais, registros de planejamento e revisões. DataStore fica limitado à preferência de tema. A base foi elevada para v2 por migração explícita. Cálculos de domínio não dependem de Compose nem Android. JSON e CSV são exportados por seletores de documentos do Android; a importação substitui dados somente após validar e confirmar.
+Room é a fonte de verdade para tarefas, fases, cenários independentes, reserva por cenário, transações, custos, cotações manuais, registros de planejamento e revisões. DataStore fica limitado à preferência de tema. A base foi elevada para v2 por migração explícita. Cenários usam a tabela existente e mantêm dados de tarefa e finanças separados por `scenarioId`. Cálculos de domínio não dependem de Compose nem Android. JSON e CSV são exportados por seletores de documentos do Android; a importação substitui dados somente após validar e confirmar e aceita múltiplos cenários.
 
 ## Navegação
 

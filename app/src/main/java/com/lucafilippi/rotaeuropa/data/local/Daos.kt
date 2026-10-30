@@ -9,6 +9,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ScenarioDao {
+    @Query("SELECT * FROM migration_scenarios ORDER BY id")
+    fun observeAll(): Flow<List<MigrationScenarioEntity>>
+    @Query("SELECT * FROM migration_scenarios WHERE active = 1 LIMIT 1")
+    fun observeActive(): Flow<MigrationScenarioEntity?>
+    @Query("SELECT * FROM migration_scenarios WHERE active = 1 LIMIT 1")
+    suspend fun getActive(): MigrationScenarioEntity?
+    @Query("UPDATE migration_scenarios SET active = 0") suspend fun clearActive()
+    @Query("DELETE FROM migration_scenarios") suspend fun clearAll()
+    @Query("SELECT MAX(id) FROM migration_scenarios") suspend fun maxId(): Long?
     @Query("SELECT * FROM migration_scenarios WHERE id = :id LIMIT 1")
     fun observe(id: Long): Flow<MigrationScenarioEntity?>
 
@@ -35,6 +44,7 @@ interface PhaseDao {
     suspend fun insertAll(phases: List<PlanPhaseEntity>)
     @Query("SELECT * FROM plan_phases ORDER BY scenarioId, `order`, id") suspend fun all(): List<PlanPhaseEntity>
     @Query("DELETE FROM plan_phases WHERE scenarioId = :scenarioId") suspend fun clearForScenario(scenarioId: Long)
+    @Query("DELETE FROM plan_phases") suspend fun clearAll()
 }
 
 @Dao
@@ -77,6 +87,7 @@ interface FinancialTransactionDao {
     @Query("SELECT * FROM financial_transactions WHERE id = :id AND scenarioId = :scenarioId LIMIT 1") suspend fun get(id: Long, scenarioId: Long): FinancialTransactionEntity?
     @Query("DELETE FROM financial_transactions WHERE id = :id AND scenarioId = :scenarioId") suspend fun delete(id: Long, scenarioId: Long)
     @Query("DELETE FROM financial_transactions WHERE scenarioId = :scenarioId") suspend fun clearForScenario(scenarioId: Long)
+    @Query("DELETE FROM financial_transactions") suspend fun clearAll()
     @Query("SELECT * FROM financial_transactions ORDER BY id") suspend fun all(): List<FinancialTransactionEntity>
 }
 
@@ -88,6 +99,7 @@ interface BudgetDao {
     @Upsert suspend fun save(item: BudgetItemEntity)
     @Query("DELETE FROM budget_items WHERE id = :id AND scenarioId = :scenarioId") suspend fun delete(id: Long, scenarioId: Long)
     @Query("DELETE FROM budget_items WHERE scenarioId = :scenarioId") suspend fun clearForScenario(scenarioId: Long)
+    @Query("DELETE FROM budget_items") suspend fun clearAll()
     @Query("SELECT * FROM budget_items ORDER BY id") suspend fun all(): List<BudgetItemEntity>
 }
 
@@ -98,6 +110,7 @@ interface ExchangeRateDao {
 
     @Upsert suspend fun save(item: ManualExchangeRateEntity)
     @Query("DELETE FROM manual_exchange_rates WHERE scenarioId = :scenarioId") suspend fun clearForScenario(scenarioId: Long)
+    @Query("DELETE FROM manual_exchange_rates") suspend fun clearAll()
     @Query("SELECT * FROM manual_exchange_rates ORDER BY id") suspend fun all(): List<ManualExchangeRateEntity>
 }
 

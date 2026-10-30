@@ -1,10 +1,10 @@
 # Modelo de dados do MVP e evolução
 
-O banco Room v2 mantém as entidades do MVP e adiciona transações, custos, cotações manuais, registros flexíveis de planejamento e revisões. A migração 1→2 cria apenas tabelas novas e preserva cenário, fases, tarefas e reserva.
+O banco Room v2 mantém as entidades do MVP e adiciona transações, custos, cotações manuais, registros flexíveis de planejamento e revisões. A migração 1→2 cria apenas tabelas novas e preserva cenário, fases, tarefas e reserva. A Fase 2 usa a tabela `migration_scenarios` existente para criar cenários independentes sem nova migração.
 
 ## Entidades iniciais
 
-- **MigrationScenario**: configuração do cenário padrão/ativo, nome/destino, data-alvo opcional e objetivo monetário. Base inicial para múltiplos cenários futuros.
+- **MigrationScenario**: configuração de cada cenário, ativo selecionado, nome/destino e data-alvo opcional. Tarefas, fases, reserva, movimentações, orçamento e cotação são associados ao seu ID.
 - **Phase**: `id`, cenário, nome e ordem; quatro fases iniciais editáveis são apenas um ponto de partida.
 - **Task**: `id`, fase, título, descrição, categoria, prioridade, status, prazo opcional, datas de criação/conclusão, peso estratégico (1–5) e sinalizador obrigatório.
 - **TaskDependency** (futuro próximo): pares tarefa pré-requisito/tarefa dependente; pendências sinalizadas sem bloquear ações paralelas.
@@ -14,7 +14,7 @@ O banco Room v2 mantém as entidades do MVP e adiciona transações, custos, cot
 - **BudgetItem**: nome, categoria, valor em unidade mínima, moeda e recorrência.
 - **JourneyRecord**: tipo, título, detalhes, status, prazo e atualização; atende provisoriamente carreira, estudos, universidades, documentos e destinos até existirem campos especializados.
 - **QuarterlyReview**: data, respostas, risco e prioridades futuras.
-- **Backup JSON v1**: envelope com versão/formato e arrays de entidades; importação valida relações e valores antes de substituir. CSV exporta tarefas, transações e custos.
+- **Backup JSON v1**: envelope com versão/formato e arrays de entidades; importação valida relações e valores de todos os cenários antes de substituir. CSV exporta tarefas, transações e custos.
 
 ## Integridade e tipos
 
@@ -24,4 +24,4 @@ Progresso operacional será ponderado por importância configurável. Prontidão
 
 ## Limites do modelo atual
 
-Scenario permanece em modelo único com ID 1. Cenários independentes, relações/tipos específicos para carreiras, universidades e documentos, requisitos de prontidão, lembretes e anexos ainda não estão implementados. Alterações de esquema exigem migrações explícitas e testes instrumentados.
+Os cenários podem ser criados e alternados; o cenário padrão ID 1 preserva os dados das versões anteriores. Relações/tipos específicos para carreiras, universidades e documentos, requisitos de prontidão, lembretes e anexos ainda não estão implementados. Alterações de esquema exigem migrações explícitas e testes instrumentados.

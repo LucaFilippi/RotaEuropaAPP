@@ -2,6 +2,13 @@
 
 Alterações relevantes, em ordem cronológica.
 
+## 1.2 — Fase 2 (2026-10-30)
+
+- Adicionados cenários financeiros independentes e persistidos, com seleção e dados separados.
+- Adicionado gráfico local da projeção da reserva em seis meses.
+- Atualizada a importação JSON para aceitar e restaurar vários cenários.
+- Mantidos `applicationId` e certificado debug; `versionCode` incrementado para 3.
+
 ## 1.1 — Desenvolvimento (2026-10-30)
 
 - Adicionada a logo fornecida na identidade visual e no ícone do app; cores atualizadas para azul/dourado.

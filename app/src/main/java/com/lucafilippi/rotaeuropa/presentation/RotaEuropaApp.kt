@@ -92,6 +92,8 @@ fun RotaEuropaApp(state: AppUiState, viewModel: RotaEuropaViewModel) {
                     onSaveBudget = viewModel::saveBudget,
                     onDeleteBudget = viewModel::deleteBudget,
                     onSaveRate = viewModel::saveExchangeRate,
+                    onSelectScenario = viewModel::selectScenario,
+                    onCreateScenario = viewModel::createScenario,
                 )
             }
             composable("more") {
