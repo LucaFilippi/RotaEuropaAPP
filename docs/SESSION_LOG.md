@@ -7,7 +7,7 @@
 - **Commits:** `380eb9b feat(planning): add career, study and readiness workflows`; `43363fd feat(backup): merge imports and test database migration`; `456b6d6 test(backup): verify scenario merge on device`.
 - **Validação:** `test assembleDebug assembleDebugAndroidTest connectedAndroidTest` passou com 4 testes no Pixel 10 (API 36). O teste Compose de acessibilidade falhou antes da asserção por incompatibilidade do Espresso 3.5.1 com `InputManager.getInstance` removido; teste removido e verificação visual pendente.
 - **APK:** versão 1.3, `versionCode 4`; `apksigner verify` passou, certificado SHA-256 permanece `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`. APK SHA-256 `A75F59AB0BAB05AE6657F06F4D5BCF5BD8A0ADEAF646D46604D29FB82FE0EFD1`.
-- **Publicação:** o arquivo de release anterior 1.2 será removido da árvore atual; o caminho estável `releases/ROTA-EUROPA-debug.apk` recebe a versão atual.
+- **Publicação:** o APK 1.2 foi substituído por 1.3 em `releases/ROTA-EUROPA-debug.apk`; o caminho estável do README segue apontando para o mais recente. O commit `8bd0850` atualiza a branch de feature e `cb70aec` integra em `develop`/`main`.
 
 ## 2026-10-30 — Fase 2: cenários financeiros e gráfico
 
