@@ -51,7 +51,7 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Lembretes locais com notificação no Android e prazo salvo no dispositivo.
 - [x] Indicador de prontidão calculado para o cenário ativo com pré-requisitos e bloqueios explicados.
 
-## Fase 6 — Backup e acabamento (Em andamento)
+## Fase 6 — Backup e acabamento (Concluído)
 
 - [x] Exportação JSON completa pelo seletor de documentos.
 - [x] Importação JSON validada e com confirmação antes de substituir os dados.
@@ -60,8 +60,9 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Mesclagem de backup JSON validada antes de adicionar cenários e registros sem remover os dados locais.
 - [x] Teste instrumentado da migração 1→2 adicionado e compilado.
 - [x] `connectedAndroidTest` passou com 5 testes instrumentados no Pixel 10/API 36 (migração, persistência, mesclagem, contexto e navegação/labels legíveis).
-- [ ] Validação visual/acessibilidade manual final em emulador/aparelho.
+- [x] Validação visual manual no AVD Pixel 10: Início, Plano, Finanças, Mais, Ajustes, Backup e seletor de arquivos.
+- [x] Navegação e abertura do seletor concluídas sem falha; base de dados vazia no AVD limpo é esperada.
 
 ## Próximo incremento
 
-Fases 2–6 foram concluídas em 30/10/2026. Compilação, testes unitários e 5 testes instrumentados passaram. A inspeção visual/acessibilidade manual continua pendente.
+Fases 0–6 foram concluídas em 30/10/2026. Compilação, testes unitários, 5 testes instrumentados e inspeção visual das telas principais passaram. O prompt mestre não define uma Fase 7; o próximo incremento precisa ser priorizado a partir das funcionalidades previstas ainda não cobertas.

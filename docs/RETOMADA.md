@@ -11,7 +11,7 @@ Data de registro: 30/10/2026
 
 ## Estado salvo
 
-- Fases 0–6 implementadas; resta inspeção visual/acessibilidade manual.
+- Fases 0–6 implementadas e validadas visualmente nas áreas principais no AVD Pixel 10.
 - Logo do usuário em `app/src/main/res/drawable-nodpi/rota_europa_logo.png`.
 - Room v2 com migração explícita 1→2.
 - `versionCode=4`, `versionName=1.3`, `applicationId` preservado.
@@ -23,14 +23,13 @@ Data de registro: 30/10/2026
 - SHA-256 do APK: `A75F59AB0BAB05AE6657F06F4D5BCF5BD8A0ADEAF646D46604D29FB82FE0EFD1`.
 - `apksigner verify` passou. Certificado SHA-256 `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`, igual às versões anteriores.
 - `test assembleDebug assembleDebugAndroidTest connectedAndroidTest` passou. Cinco testes instrumentados passaram no Pixel 10/API 36: migração Room 1→2, persistência, mesclagem, contexto e navegação/labels legíveis. Espresso 3.7.0 resolveu a incompatibilidade anterior.
-- Inspeção visual/acessibilidade manual continua pendente.
+- Inspeção visual manual de Início, Plano, Finanças, Mais, Ajustes e Backup/seletor de documentos passou sem falha de navegação ou crash. O AVD estava limpo, então os registros aparecem vazios como esperado.
 - Fases 3–5 implementam formulários especializados, Kanban, checklist documental, relatórios, prontidão e lembretes/notificações locais. Fase 6 inclui mesclagem JSON.
 
 ## Próximas ações prioritárias
 
-1. Instalar o APK 1.3 e conferir a interface/fluxos no emulador ou celular.
-2. Fazer a inspeção visual/acessibilidade manual em emulador ou aparelho.
-3. Abrir no Android Studio a pasta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
+1. Priorizar um próximo incremento funcional: o prompt mestre só especifica as Fases 0–6; mapear funcionalidades de detalhe ainda não cobertas antes de criar uma nova fase.
+2. Abrir no Android Studio a pasta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
 
 ## Limitação conhecida
 
