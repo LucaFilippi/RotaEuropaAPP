@@ -19,7 +19,8 @@ Data de registro: 30/10/2026
 - O certificado SHA-256 do APK anterior e do novo build foi comparado e é o mesmo: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`.
 - Branch de integração: `develop` (`a53d973`, baseline salvo).
 - Branch ativa: `feature/fases-2-6` (continuação desta entrega).
-- Próxima ação Git: configurar `origin` para o repositório acima e publicar ambas as branches; `git ls-remote` não encontrou refs remotas antes do primeiro push.
+- Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
+- Continue novas entregas em branches `feature/*`; integre em `develop` e reserve `main` para a versão final.
 
 ## Próximas ações prioritárias
 
