@@ -4,11 +4,11 @@ Aplicativo Android pessoal para planejar uma mudança internacional com cenário
 
 ## Estado atual
 
-Fases 0–2 concluídas. As fases posteriores permanecem fora do escopo atual; consulte `docs/ROADMAP.md`.
+Fases 0–5 concluídas. A validação de Fase 6 aguarda emulador ou dispositivo Android; consulte `docs/ROADMAP.md`.
 
 ## Baixar no Android
 
-Baixe o APK de desenvolvimento 1.2 publicado no repositório: [ROTA-EUROPA-1.2-debug.apk](https://github.com/LucaFilippi/RotaEuropaAPP/raw/refs/heads/main/releases/ROTA-EUROPA-1.2-debug.apk). No celular, abra esse link, permita a instalação desta fonte quando solicitado e instale por cima da versão anterior. O pacote e o certificado de assinatura foram mantidos para permitir atualização.
+Baixe o APK de desenvolvimento mais recente publicado no repositório: [ROTA-EUROPA-debug.apk](https://github.com/LucaFilippi/RotaEuropaAPP/raw/refs/heads/main/releases/ROTA-EUROPA-debug.apk). No celular, abra esse link, permita a instalação desta fonte quando solicitado e instale por cima da versão anterior. O pacote e o certificado de assinatura foram mantidos para permitir atualização.
 
 ## Tecnologias e ambiente
 
@@ -44,10 +44,10 @@ Os comandos acima são instruções de uso. Use o cache Gradle local com `gradle
 ## Limitações conhecidas
 
 - O app é nativo Android e deve ser testado no emulador/dispositivo; Chrome não executa o APK.
-- Registros de carreira, idiomas, estudos, universidades e documentos usam um formato local flexível; ainda não têm todos os campos especializados do prompt mestre.
+- Registros de carreira, idiomas, estudos, universidades e documentos guardam campos específicos como texto local estruturado; ainda não usam tabelas especializadas.
 - O comparador rápido de metas em euros é apenas referência; cenários salvos são gerenciados separadamente na tela Finanças.
 - A importação JSON substitui dados após confirmação e validação; mesclagem ainda não está implementada. CSV cobre tarefas, movimentações e orçamento.
 - O projeto usa flags temporárias de compatibilidade AGP/KSP documentadas em `gradle.properties`; essas flags são depreciadas e precisam ser revistas ao atualizar o Android Gradle Plugin.
-- O teste unitário e o build debug foram executados. O emulador não iniciou nesta sessão por bloqueio de escrita na pasta `.android`; o teste de migração Room para v2 e a inspeção manual das novas telas precisam ser feitos ao retomar.
+- Testes unitários, APK debug e pacote de testes instrumentados compilam. A execução instrumentada e inspeção manual aguardam dispositivo; o ADB não conseguiu iniciar nesta sessão.
 
 Consulte `docs/ROADMAP.md` e `docs/SESSION_LOG.md` para o estado de implementação.

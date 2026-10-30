@@ -11,30 +11,25 @@ Data de registro: 30/10/2026
 
 ## Estado salvo
 
-- Fases 0–2 concluídas no código local; fases 3–6 continuam fora do escopo desta entrega.
+- Fases 0–5 implementadas; a Fase 6 aguarda inspeção visual/acessibilidade manual.
 - Logo do usuário em `app/src/main/res/drawable-nodpi/rota_europa_logo.png`.
 - Room v2 com migração explícita 1→2.
-- `versionCode=3`, `versionName=1.2`, `applicationId` preservado.
+- `versionCode=4`, `versionName=1.3`, `applicationId` preservado.
 - O certificado SHA-256 do APK anterior e do novo build foi comparado e é o mesmo: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`.
-- Branch de integração: `develop` (`7dda3cd`, Fase 2 integrada e publicada).
-- Branch ativa: `feature/fases-2-6` (continuação desta entrega).
-- Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
-- Commit da Fase 2: `6c2ad36` (`feat(finance): complete phase 2 planning`).
-- Merge integrado: `7dda3cd`; branches `develop` e `main` publicadas no GitHub no mesmo estado.
-- Build e testes unitários executados com sucesso após os últimos ajustes (`test assembleDebug`).
-- APK atualizado salvo em `C:\Users\user\Documents\Codex\2026-10-29\c\outputs\ROTA-EUROPA-1.2-debug.apk` e no alias `ROTA-EUROPA-debug.apk`.
-- SHA-256 do APK: `91507A127848324A9C514596D2DAFE83D1FA3CAD93CD93CE823EC53A125365AF`.
-- `apksigner verify` passou. A assinatura foi comparada com a versão anterior e com a chave debug local, preservando a possibilidade de atualização no mesmo aparelho.
-- SHA-256 do certificado: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543` (igual ao APK 1.1).
-- Fase 2 adicionou cenários financeiros locais isolados, gráfico de projeção de seis meses e backup JSON compatível com múltiplos cenários.
-- Fase 2 foi commitada em `feature/fases-2-6`, mesclada em `develop`, e `main` foi criada/alinhada ao estado integrado. Não iniciar Fase 3 sem autorização do usuário.
+- Branch de integração: `develop`; branch de trabalho: `feature/fases-3-6`.
+- Entregas profissionais: `380eb9b` (carreira/estudos/prontidão) e `43363fd` (mesclagem de backups/migração).
+- Release atual: `releases/ROTA-EUROPA-debug.apk`, APK 1.3; substitui o arquivo 1.2 na pasta pública do repositório.
+- SHA-256 do APK: `A75F59AB0BAB05AE6657F06F4D5BCF5BD8A0ADEAF646D46604D29FB82FE0EFD1`.
+- `apksigner verify` passou. Certificado SHA-256 `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`, igual às versões anteriores.
+- `test assembleDebug assembleDebugAndroidTest` passou. `connectedAndroidTest` passou com 3 testes no Pixel 10: migração Room 1→2, persistência e contexto.
+- O teste Compose de acessibilidade foi removido após falhar em Espresso 3.5.1/API 36 antes da asserção (`InputManager.getInstance` ausente). Inspeção visual/acessibilidade manual continua pendente.
+- Fases 3–5 implementam formulários especializados, Kanban, checklist documental, relatórios, prontidão e lembretes/notificações locais. Fase 6 inclui mesclagem JSON.
 
 ## Próximas ações prioritárias
 
-1. Instalar o APK 1.2 no Pixel 10 ou celular conectado e validar atualização sobre a versão existente.
-2. Testar cenários, backup e migração Room 1→2 com dados no dispositivo/emulador.
-3. Abrir no Android Studio a pasta específica do projeto caso ainda não esteja aberta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
-4. Não iniciar Fase 3 até autorização explícita do usuário.
+1. Instalar o APK 1.3 e conferir a interface/fluxos no emulador ou celular.
+2. Atualizar Espresso para uma versão compatível com API 36 e reintroduzir o teste automatizado de acessibilidade, ou validar manualmente em aparelho.
+3. Abrir no Android Studio a pasta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
 
 ## Limitação conhecida
 
