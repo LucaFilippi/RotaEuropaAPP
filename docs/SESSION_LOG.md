@@ -9,6 +9,13 @@
 - **APK:** versão 1.3, `versionCode 4`; `apksigner verify` passou, certificado SHA-256 permanece `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`. APK SHA-256 `A75F59AB0BAB05AE6657F06F4D5BCF5BD8A0ADEAF646D46604D29FB82FE0EFD1`.
 - **Publicação:** o APK 1.2 foi substituído por 1.3 em `releases/ROTA-EUROPA-debug.apk`; o caminho estável do README segue apontando para o mais recente. O commit `8bd0850` atualiza a branch de feature e `cb70aec` integra em `develop`/`main`.
 
+## 2026-10-30 — Validação final de acessibilidade automatizada
+
+- **Objetivo:** concluir a validação automatizada pendente da Fase 6 no Android 16.
+- **Alterações:** Espresso atualizado de 3.5.1 para 3.7.0; teste Compose de navegação restaurado, verificando rótulos e telas principais.
+- **Validação:** `test assembleDebug assembleDebugAndroidTest connectedAndroidTest --console=plain --no-daemon` passou no Pixel 10/API 36, com 5 testes instrumentados. O APK debug permaneceu na versão 1.3 (versionCode 4), compatível com a assinatura anterior; mudanças são restritas a testes/documentação.
+- **Pendência:** inspeção visual e acessibilidade manual no aparelho/emulador.
+
 ## 2026-10-30 — Fase 2: cenários financeiros e gráfico
 
 - **Objetivo:** concluir exclusivamente o planejamento financeiro (Fase 2), sem começar a Fase 3.
