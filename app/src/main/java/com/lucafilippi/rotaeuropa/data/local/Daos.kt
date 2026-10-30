@@ -34,6 +34,7 @@ interface ScenarioDao {
 
 @Dao
 interface PhaseDao {
+    @Query("SELECT * FROM plan_phases WHERE scenarioId = :scenarioId ORDER BY `order`, id") suspend fun getForScenario(scenarioId: Long): List<PlanPhaseEntity>
     @Query("SELECT * FROM plan_phases WHERE scenarioId = :scenarioId ORDER BY `order`, id")
     fun observeForScenario(scenarioId: Long): Flow<List<PlanPhaseEntity>>
 
