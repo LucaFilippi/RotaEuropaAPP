@@ -17,6 +17,28 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 class RotaEuropaPersistenceTest {
     @Test
+    fun mergingBackupAddsIndependentScenarioAndPreservesCurrentScenario() {
+        runBlocking {
+            val context = InstrumentationRegistry.getInstrumentation().targetContext
+            val databaseName = "rota-backup-merge-test.db"
+            context.deleteDatabase(databaseName)
+            val database = Room.databaseBuilder(context, RotaEuropaDatabase::class.java, databaseName).build()
+            val repository = RotaEuropaRepository(database)
+            repository.initialize()
+            val backup = repository.createJsonBackup()
+
+            repository.mergeFromJsonBackup(backup)
+
+            assertEquals(2, database.scenarioDao().all().size)
+            assertEquals(2, database.reserveDao().all().size)
+            assertEquals(1L, database.scenarioDao().getActive()?.id)
+            assertEquals(2, database.phaseDao().all().map { it.scenarioId }.distinct().size)
+            database.close()
+            context.deleteDatabase(databaseName)
+        }
+    }
+
+    @Test
     fun versionOneDatabaseMigratesWithoutLosingScenarioAndPlan() {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val databaseName = "rota-migration-test.db"
