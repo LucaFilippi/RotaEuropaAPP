@@ -4,7 +4,11 @@ Aplicativo Android pessoal para planejar uma mudança internacional com cenário
 
 ## Estado atual
 
-Fases 0 e 1 concluídas. A branch de desenvolvimento amplia a base com finanças, cadastros de carreira/estudo/destinos/documentos, revisões trimestrais e backup. As Fases 2–6 ainda estão em andamento; consulte `docs/ROADMAP.md` para os limites exatos desta entrega.
+Fases 0–2 concluídas. As fases posteriores permanecem fora do escopo atual; consulte `docs/ROADMAP.md`.
+
+## Baixar no Android
+
+Baixe o APK de desenvolvimento 1.2 publicado no repositório: [ROTA-EUROPA-1.2-debug.apk](https://github.com/LucaFilippi/RotaEuropaAPP/raw/refs/heads/main/releases/ROTA-EUROPA-1.2-debug.apk). No celular, abra esse link, permita a instalação desta fonte quando solicitado e instale por cima da versão anterior. O pacote e o certificado de assinatura foram mantidos para permitir atualização.
 
 ## Tecnologias e ambiente
 
@@ -41,7 +45,7 @@ Os comandos acima são instruções de uso. Use o cache Gradle local com `gradle
 
 - O app é nativo Android e deve ser testado no emulador/dispositivo; Chrome não executa o APK.
 - Registros de carreira, idiomas, estudos, universidades e documentos usam um formato local flexível; ainda não têm todos os campos especializados do prompt mestre.
-- O comparador financeiro ainda não salva cenários independentes; os três valores em euros apresentados são referências rápidas. Gráficos, notificações, indicadores de prontidão e cenários múltiplos continuam pendentes.
+- O comparador rápido de metas em euros é apenas referência; cenários salvos são gerenciados separadamente na tela Finanças.
 - A importação JSON substitui dados após confirmação e validação; mesclagem ainda não está implementada. CSV cobre tarefas, movimentações e orçamento.
 - O projeto usa flags temporárias de compatibilidade AGP/KSP documentadas em `gradle.properties`; essas flags são depreciadas e precisam ser revistas ao atualizar o Android Gradle Plugin.
 - O teste unitário e o build debug foram executados. O emulador não iniciou nesta sessão por bloqueio de escrita na pasta `.android`; o teste de migração Room para v2 e a inspeção manual das novas telas precisam ser feitos ao retomar.
