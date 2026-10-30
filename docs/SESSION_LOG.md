@@ -16,6 +16,13 @@
 - **Validação:** `test assembleDebug assembleDebugAndroidTest connectedAndroidTest --console=plain --no-daemon` passou no Pixel 10/API 36, com 5 testes instrumentados. O APK debug permaneceu na versão 1.3 (versionCode 4), compatível com a assinatura anterior; mudanças são restritas a testes/documentação.
 - **Pendência:** inspeção visual e acessibilidade manual no aparelho/emulador.
 
+## 2026-10-30 — Inspeção visual final da Fase 6
+
+- **Objetivo:** concluir o item visual manual da Fase 6 no AVD Pixel 10/API 36.
+- **Validação:** instalado por atualização o APK debug atual, conferidas Início, Plano, Finanças, Mais, Ajustes e Backup; seletor de documentos abriu com o nome padrão `ROTA-EUROPA-backup.json`. Navegação concluída sem crash. A base vazia é esperada no AVD recém-instalado.
+- **Release:** sem alterações no código do app; APK 1.3 (`versionCode 4`) permanece o mais atual e mantém o mesmo SHA-256. Nenhuma nova versão foi necessária.
+- **Próximo incremento:** o prompt mestre termina na Fase 6. Definir uma nova prioridade com base nas partes detalhadas do prompt ainda não cobertas.
+
 ## 2026-10-30 — Fase 2: cenários financeiros e gráfico
 
 - **Objetivo:** concluir exclusivamente o planejamento financeiro (Fase 2), sem começar a Fase 3.
