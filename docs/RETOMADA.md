@@ -17,7 +17,10 @@ Data de registro: 30/10/2026
 - Room v2 com migração explícita 1→2.
 - `versionCode=2`, `versionName=1.1`, `applicationId` preservado.
 - O certificado SHA-256 do APK anterior e do novo build foi comparado e é o mesmo: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`.
-- A branch local ainda deve ser criada/publicada nesta retomada: `develop` para integração e `feature/fases-2-6` para o trabalho em andamento. `git ls-remote` não encontrou refs remotas.
+- Branch de integração: `develop` (`a53d973`, baseline salvo).
+- Branch ativa: `feature/fases-2-6` (continuação desta entrega).
+- Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
+- Continue novas entregas em branches `feature/*`; integre em `develop` e reserve `main` para a versão final.
 
 ## Próximas ações prioritárias
 
