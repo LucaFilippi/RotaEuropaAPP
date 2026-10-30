@@ -1,5 +1,13 @@
 # Registro de sessões
 
+## 2026-10-30 — Fase 2: cenários financeiros e gráfico
+
+- **Objetivo:** concluir exclusivamente o planejamento financeiro (Fase 2), sem começar a Fase 3.
+- **Implementado:** criação/seleção de cenários financeiros persistidos com reserva, fases, tarefas, histórico, orçamento e cotação isolados por `scenarioId`; gráfico de projeção da reserva por seis meses; importação JSON com validação e restauração de múltiplos cenários; versão 1.2 / `versionCode 3`.
+- **Validação:** `test assembleDebug` passou (43 tarefas Gradle, incluindo testes unitários). `apksigner verify` passou e o certificado do APK 1.2 corresponde ao APK 1.1 (`7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`). O APK foi gerado como atualização compatível.
+- **Limitação:** teste manual de troca de cenários/backup e migração no emulador ou aparelho segue pendente porque não havia dispositivo ADB conectado e o emulador foi bloqueado pela sandbox.
+- **Escopo:** Fase 3 não foi iniciada; aguardar autorização do usuário.
+
 ## 2026-10-30 — Continuação das Fases 2–6, logo e conexão Git
 
 - **Objetivo:** continuar o app existente, manter possibilidade de atualização por cima do APK anterior, incorporar logo e salvar o progresso em branch remota.

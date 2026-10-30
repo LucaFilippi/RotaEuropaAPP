@@ -48,6 +48,11 @@ import com.lucafilippi.rotaeuropa.domain.convertEurToBrlMinor
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 
 @Composable
 fun FinanceScreen(
@@ -58,6 +63,8 @@ fun FinanceScreen(
     onSaveBudget: (String, String, String, String, Boolean, String) -> Unit,
     onDeleteBudget: (Long) -> Unit,
     onSaveRate: (String, String, String, String) -> Unit,
+    onSelectScenario: (Long) -> Unit,
+    onCreateScenario: (String, String, String) -> Unit,
 ) {
     var balance by remember(state.reserve) { mutableStateOf(formatForInput(state.reserve.balanceMinor)) }
     var goal by remember(state.reserve) { mutableStateOf(formatForInput(state.reserve.goalMinor)) }
@@ -67,6 +74,7 @@ fun FinanceScreen(
     var transactionDialog by remember { mutableStateOf(false) }
     var budgetDialog by remember { mutableStateOf(false) }
     var rateDialog by remember { mutableStateOf(false) }
+    var scenarioDialog by remember { mutableStateOf(false) }
     val projection = calculateReserveProjection(
         com.lucafilippi.rotaeuropa.domain.parseMoneyToMinorUnits(balance) ?: 0,
         com.lucafilippi.rotaeuropa.domain.parseMoneyToMinorUnits(goal) ?: 0,
@@ -84,6 +92,21 @@ fun FinanceScreen(
         }
 
         Card(shape = RoundedCornerShape(22.dp)) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Column(Modifier.weight(1f)) {
+                        Text("Cenários financeiros", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                        Text("Cada cenário guarda sua própria reserva, meta, custos e cotação.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    OutlinedButton(onClick = { scenarioDialog = true }) { Text("Novo") }
+                }
+                state.scenarios.forEach { scenario ->
+                    FilterChip(selected = scenario.id == state.scenario.id, onClick = { onSelectScenario(scenario.id) }, label = { Text(scenario.name) })
+                }
+            }
+        }
+
+        Card(shape = RoundedCornerShape(22.dp)) {
             Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Moeda de referência", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -92,6 +115,21 @@ fun FinanceScreen(
                     }
                 }
                 Text("O app não consulta cotações. A equivalência só é calculada quando você cadastra uma cotação manual.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+
+        Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f))) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text("Projeção da reserva • próximos 6 meses", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                val balanceNow = state.reserve.balanceMinor.toFloat()
+                val points = (0..6).map { month -> balanceNow + state.reserve.monthlyContributionMinor.toFloat() * month }
+                ReserveProjectionChart(points)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text("Hoje", style = MaterialTheme.typography.labelSmall)
+                    Text("3 meses", style = MaterialTheme.typography.labelSmall)
+                    Text("6 meses", style = MaterialTheme.typography.labelSmall)
+                }
+                Text("Estimativa sem rendimentos, inflação ou despesas futuras. Valores no cenário e moeda selecionados.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -229,6 +267,37 @@ fun FinanceScreen(
     if (transactionDialog) TransactionDialog(state.reserve.currency, onDismiss = { transactionDialog = false }, onSave = { amount, kind, note, date -> onSaveTransaction(amount, kind, note, date); transactionDialog = false })
     if (budgetDialog) BudgetDialog(state.reserve.currency, onDismiss = { budgetDialog = false }, onSave = { name, category, amount, code, recurring, note -> onSaveBudget(name, category, amount, code, recurring, note); budgetDialog = false })
     if (rateDialog) RateDialog(onDismiss = { rateDialog = false }, onSave = { rate, date, source, note -> onSaveRate(rate, date, source, note); rateDialog = false })
+    if (scenarioDialog) ScenarioDialog(onDismiss = { scenarioDialog = false }, onSave = { name, destination, date -> onCreateScenario(name, destination, date); scenarioDialog = false })
+}
+
+@Composable
+private fun ReserveProjectionChart(points: List<Float>) {
+    val lineColor = MaterialTheme.colorScheme.primary
+    val gridColor = MaterialTheme.colorScheme.outlineVariant
+    Canvas(Modifier.fillMaxWidth().height(150.dp).padding(horizontal = 8.dp, vertical = 8.dp)) {
+        val maxValue = (points.maxOrNull() ?: 1f).coerceAtLeast(1f)
+        val minValue = (points.minOrNull() ?: 0f).coerceAtMost(0f)
+        val span = (maxValue - minValue).coerceAtLeast(1f)
+        val coords = points.mapIndexed { index, value -> Offset(size.width * index / (points.lastIndex.coerceAtLeast(1)), size.height * (1f - (value - minValue) / span)) }
+        for (row in 0..3) drawLine(gridColor, Offset(0f, size.height * row / 3f), Offset(size.width, size.height * row / 3f), strokeWidth = 1f)
+        val path = Path().apply { coords.forEachIndexed { index, point -> if (index == 0) moveTo(point.x, point.y) else lineTo(point.x, point.y) } }
+        drawPath(path, lineColor, style = Stroke(width = 5f))
+        coords.forEach { drawCircle(lineColor, radius = 6f, center = it) }
+    }
+}
+
+@Composable
+private fun ScenarioDialog(onDismiss: () -> Unit, onSave: (String, String, String) -> Unit) {
+    var name by remember { mutableStateOf("") }
+    var destination by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    AlertDialog(onDismissRequest = onDismiss, title = { Text("Novo cenário financeiro") }, text = {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(name, { name = it }, label = { Text("Nome") }, singleLine = true)
+            OutlinedTextField(destination, { destination = it }, label = { Text("Destino (opcional)") }, singleLine = true)
+            OutlinedTextField(date, { date = it }, label = { Text("Data-alvo (DD/MM/AAAA, opcional)") }, singleLine = true)
+        }
+    }, confirmButton = { TextButton(onClick = { onSave(name, destination, date) }) { Text("Criar") } }, dismissButton = { TextButton(onClick = onDismiss) { Text("Cancelar") } })
 }
 
 @Composable

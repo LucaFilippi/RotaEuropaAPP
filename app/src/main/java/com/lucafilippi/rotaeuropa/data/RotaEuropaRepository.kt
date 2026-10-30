@@ -25,6 +25,7 @@ import com.lucafilippi.rotaeuropa.domain.TaskStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
@@ -48,36 +49,57 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
     private val journeyRecordDao = database.journeyRecordDao()
     private val quarterlyReviewDao = database.quarterlyReviewDao()
 
-    val tasks: Flow<List<PlanTaskItem>> = taskDao.observeForScenario(DEFAULT_SCENARIO_ID).map { rows ->
+    val scenarios = scenarioDao.observeAll().map { rows -> rows.map { ScenarioItem(it.name, it.destination, it.targetDateEpochDay, it.active, it.id) } }
+    private val activeScenario = scenarioDao.observeActive().map { it?.id ?: DEFAULT_SCENARIO_ID }
+    val tasks: Flow<List<PlanTaskItem>> = activeScenario.flatMapLatest { id -> taskDao.observeForScenario(id) }.map { rows ->
         rows.map { it.toItem() }
     }
-    val phases: Flow<List<PlanPhaseItem>> = phaseDao.observeForScenario(DEFAULT_SCENARIO_ID).map { rows ->
+    val phases: Flow<List<PlanPhaseItem>> = activeScenario.flatMapLatest { id -> phaseDao.observeForScenario(id) }.map { rows ->
         rows.map { PlanPhaseItem(it.id, it.name, it.order) }
     }
-    val reserve: Flow<ReserveItem> = reserveDao.observe(DEFAULT_SCENARIO_ID).map { row ->
+    val reserve: Flow<ReserveItem> = activeScenario.flatMapLatest { id -> reserveDao.observe(id) }.map { row ->
         row?.let { ReserveItem(it.balanceMinor, it.goalMinor, it.monthlyContributionMinor, it.currency) }
             ?: ReserveItem(0, 0, 0, "EUR")
     }
-    val scenario: Flow<ScenarioItem> = scenarioDao.observe(DEFAULT_SCENARIO_ID).map { row ->
-        row?.let { ScenarioItem(it.name, it.destination, it.targetDateEpochDay) }
-            ?: ScenarioItem("Plano principal", "", null)
+    val scenario: Flow<ScenarioItem> = scenarioDao.observeActive().map { row ->
+        row?.let { ScenarioItem(it.name, it.destination, it.targetDateEpochDay, it.active, it.id) }
+            ?: ScenarioItem("Plano principal", "", null, id = DEFAULT_SCENARIO_ID)
     }
-    val transactions = transactionDao.observeForScenario(DEFAULT_SCENARIO_ID).map { rows -> rows.map { it.toItem() } }
-    val budget = budgetDao.observeForScenario(DEFAULT_SCENARIO_ID).map { rows -> rows.map { BudgetItem(it.id, it.name, it.category, it.amountMinor, it.currency, it.recurring, it.note) } }
-    val exchangeRates = exchangeRateDao.observeForScenario(DEFAULT_SCENARIO_ID).map { rows -> rows.map { ExchangeRateItem(it.id, it.brlPerEurMinor, it.quotedAtEpochDay, it.source, it.note) } }
+    val transactions = activeScenario.flatMapLatest { id -> transactionDao.observeForScenario(id) }.map { rows -> rows.map { it.toItem() } }
+    val budget = activeScenario.flatMapLatest { id -> budgetDao.observeForScenario(id) }.map { rows -> rows.map { BudgetItem(it.id, it.name, it.category, it.amountMinor, it.currency, it.recurring, it.note) } }
+    val exchangeRates = activeScenario.flatMapLatest { id -> exchangeRateDao.observeForScenario(id) }.map { rows -> rows.map { ExchangeRateItem(it.id, it.brlPerEurMinor, it.quotedAtEpochDay, it.source, it.note) } }
     fun journeyRecords(type: String) = journeyRecordDao.observe(type)
     val quarterlyReviews = quarterlyReviewDao.observeAll()
     val extendedData = combine(transactions, budget, exchangeRates, journeyRecordDao.observeAll(), quarterlyReviews) { tx, items, rates, records, reviews ->
         ExtendedLocalData(tx, items, rates, records, reviews)
     }
 
+    suspend fun selectScenario(id: Long) = database.withTransaction {
+        require(scenarioDao.get(id) != null) { "O cenário selecionado não existe." }
+        scenarioDao.clearActive()
+        scenarioDao.save(scenarioDao.get(id)!!.copy(active = true))
+    }
+
+    suspend fun createScenario(name: String, destination: String, targetDateEpochDay: Long?) = database.withTransaction {
+        val cleanName = name.trim()
+        require(cleanName.isNotBlank()) { "Informe um nome para o cenário." }
+        val id = (scenarioDao.maxId() ?: 0L) + 1L
+        scenarioDao.clearActive()
+        scenarioDao.save(MigrationScenarioEntity(id = id, name = cleanName, destination = destination.trim(), targetDateEpochDay = targetDateEpochDay, active = true))
+        phaseDao.insertAll(listOf("Fundação", "Consolidação", "Preparação da mudança", "Execução").mapIndexed { index, phase -> PlanPhaseEntity(scenarioId = id, name = phase, order = index) })
+        reserveDao.insertIfMissing(FinancialReserveEntity(scenarioId = id))
+    }
+
+    private suspend fun activeId() = scenarioDao.getActive()?.id ?: DEFAULT_SCENARIO_ID
+
     suspend fun saveTransaction(item: FinancialTransactionItem) {
-        val reserve = reserveDao.get(DEFAULT_SCENARIO_ID) ?: FinancialReserveEntity()
+        val scenarioId = activeId()
+        val reserve = reserveDao.get(scenarioId) ?: FinancialReserveEntity(scenarioId = scenarioId)
         require(item.amountMinor > 0) { "Informe um valor maior que zero." }
         require(item.currency == reserve.currency) { "Para atualizar o saldo, use a mesma moeda configurada para a reserva (${reserve.currency})." }
         if (item.kind == TransactionKind.WITHDRAWAL) require(item.amountMinor <= reserve.balanceMinor) { "A retirada não pode superar a reserva atual." }
         database.withTransaction {
-            transactionDao.save(FinancialTransactionEntity(item.id, DEFAULT_SCENARIO_ID, item.amountMinor, item.currency, item.kind.name, item.occurredAtEpochDay, item.note))
+            transactionDao.save(FinancialTransactionEntity(item.id, scenarioId, item.amountMinor, item.currency, item.kind.name, item.occurredAtEpochDay, item.note))
             if (item.id == 0L) {
                 val change = item.amountMinor * item.kind.sign
                 reserveDao.save(reserve.copy(balanceMinor = (reserve.balanceMinor + change).coerceAtLeast(0)))
@@ -86,20 +108,21 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
     }
 
     suspend fun deleteTransaction(id: Long) {
+        val scenarioId = activeId()
         database.withTransaction {
-            val item = transactionDao.get(id, DEFAULT_SCENARIO_ID) ?: return@withTransaction
-            val reserve = reserveDao.get(DEFAULT_SCENARIO_ID)
+            val item = transactionDao.get(id, scenarioId) ?: return@withTransaction
+            val reserve = reserveDao.get(scenarioId)
             if (reserve != null && item.currency == reserve.currency) {
                 val sign = if (item.kind == TransactionKind.CONTRIBUTION.name) -1 else 1
                 reserveDao.save(reserve.copy(balanceMinor = (reserve.balanceMinor + item.amountMinor * sign).coerceAtLeast(0)))
             }
-            transactionDao.delete(id, DEFAULT_SCENARIO_ID)
+            transactionDao.delete(id, scenarioId)
         }
     }
 
-    suspend fun saveBudget(item: BudgetItem) = budgetDao.save(BudgetItemEntity(item.id, DEFAULT_SCENARIO_ID, item.name, item.category, item.amountMinor, item.currency, item.recurring, item.note))
-    suspend fun deleteBudget(id: Long) = budgetDao.delete(id, DEFAULT_SCENARIO_ID)
-    suspend fun saveExchangeRate(item: ExchangeRateItem) = exchangeRateDao.save(ManualExchangeRateEntity(item.id, DEFAULT_SCENARIO_ID, item.brlPerEurMinor, item.quotedAtEpochDay, item.source, item.note))
+    suspend fun saveBudget(item: BudgetItem) = budgetDao.save(BudgetItemEntity(item.id, activeId(), item.name, item.category, item.amountMinor, item.currency, item.recurring, item.note))
+    suspend fun deleteBudget(id: Long) = budgetDao.delete(id, activeId())
+    suspend fun saveExchangeRate(item: ExchangeRateItem) = exchangeRateDao.save(ManualExchangeRateEntity(item.id, activeId(), item.brlPerEurMinor, item.quotedAtEpochDay, item.source, item.note))
     suspend fun saveJourneyRecord(item: JourneyRecordEntity) = journeyRecordDao.save(item)
     suspend fun deleteJourneyRecord(id: Long) = journeyRecordDao.delete(id)
     suspend fun saveQuarterlyReview(item: QuarterlyReviewEntity) = quarterlyReviewDao.save(item)
@@ -123,13 +146,14 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         val parsed = parseBackup(json)
         database.withTransaction {
             taskDao.clearAll()
-            transactionDao.clearForScenario(DEFAULT_SCENARIO_ID)
-            budgetDao.clearForScenario(DEFAULT_SCENARIO_ID)
-            exchangeRateDao.clearForScenario(DEFAULT_SCENARIO_ID)
+            transactionDao.clearAll()
+            budgetDao.clearAll()
+            exchangeRateDao.clearAll()
             journeyRecordDao.clearAll()
             quarterlyReviewDao.clearAll()
             reserveDao.clearAll()
-            phaseDao.clearForScenario(DEFAULT_SCENARIO_ID)
+            phaseDao.clearAll()
+            scenarioDao.clearAll()
             parsed.scenarios.forEach { scenarioDao.save(it) }
             phaseDao.insertAll(parsed.phases)
             parsed.tasks.forEach { taskDao.save(it) }
@@ -155,24 +179,26 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         require(root.getInt("schemaVersion") == 1) { "Versão do backup não compatível." }
         fun rows(key: String) = root.getJSONArray(key)
         val scenarios = rows("scenarios").objects().map { MigrationScenarioEntity(it.getLong("id"), it.getString("name"), it.getString("destination"), it.nullableLong("targetDateEpochDay"), it.getBoolean("active")) }
-        require(scenarios.size == 1 && scenarios.single().id == DEFAULT_SCENARIO_ID) { "O backup precisa conter exatamente o cenário principal suportado por esta versão." }
+        require(scenarios.isNotEmpty() && scenarios.all { it.id > 0 && it.name.isNotBlank() } && scenarios.map { it.id }.distinct().size == scenarios.size && scenarios.count { it.active } == 1) { "A lista de cenários do backup é inválida." }
+        val scenarioIds = scenarios.map { it.id }.toSet()
         val phases = rows("phases").objects().map { PlanPhaseEntity(it.getLong("id"), it.getLong("scenarioId"), it.getString("name"), it.getInt("order")) }
-        require(phases.isNotEmpty() && phases.all { it.scenarioId == DEFAULT_SCENARIO_ID && it.id > 0 && it.name.isNotBlank() }) { "As fases do backup são inválidas." }
+        require(phases.isNotEmpty() && phases.all { it.scenarioId in scenarioIds && it.id > 0 && it.name.isNotBlank() } && phases.map { it.id }.distinct().size == phases.size) { "As fases do backup são inválidas." }
         val phaseIds = phases.map { it.id }.toSet()
         val tasks = rows("tasks").objects().map {
             val status = it.getString("status"); val priority = it.getString("priority")
             require(status in TaskStatus.entries.map { value -> value.name } && priority in TaskPriority.entries.map { value -> value.name }) { "O backup contém tarefa com status ou prioridade inválida." }
             PlanTaskEntity(it.getLong("id"), it.getLong("scenarioId"), it.getLong("phaseId"), it.getString("title"), it.getString("description"), it.getString("category"), priority, status, it.getLong("createdAtMillis"), it.nullableLong("dueDateEpochDay"), it.nullableLong("completedAtMillis"), it.getInt("importance"), it.getBoolean("required"))
         }
-        require(tasks.all { it.scenarioId == DEFAULT_SCENARIO_ID && it.phaseId in phaseIds && it.title.isNotBlank() }) { "Há tarefas associadas a fases inexistentes ou sem título." }
+        val phaseScenarioById = phases.associate { it.id to it.scenarioId }
+        require(tasks.all { it.scenarioId in scenarioIds && phaseScenarioById[it.phaseId] == it.scenarioId && it.title.isNotBlank() }) { "Há tarefas associadas a fases inexistentes ou sem título." }
         val reserves = rows("reserves").objects().map { FinancialReserveEntity(it.getLong("scenarioId"), it.getString("currency"), it.getLong("balanceMinor"), it.getLong("goalMinor"), it.getLong("monthlyContributionMinor")) }
-        require(reserves.size == 1 && reserves.single().scenarioId == DEFAULT_SCENARIO_ID && reserves.single().currency in listOf("BRL", "EUR") && reserves.single().balanceMinor >= 0 && reserves.single().goalMinor >= 0 && reserves.single().monthlyContributionMinor >= 0) { "Os dados da reserva são inválidos." }
+        require(reserves.map { it.scenarioId }.toSet() == scenarioIds && reserves.size == scenarioIds.size && reserves.all { it.currency in listOf("BRL", "EUR") && it.balanceMinor >= 0 && it.goalMinor >= 0 && it.monthlyContributionMinor >= 0 }) { "Os dados das reservas são inválidos." }
         val transactions = rows("transactions").objects().map { FinancialTransactionEntity(it.getLong("id"), it.getLong("scenarioId"), it.getLong("amountMinor"), it.getString("currency"), it.getString("kind"), it.getLong("occurredAtEpochDay"), it.getString("note")) }
-        require(transactions.all { it.scenarioId == DEFAULT_SCENARIO_ID && it.amountMinor > 0 && it.currency in listOf("BRL", "EUR") && it.kind in TransactionKind.entries.map { kind -> kind.name } }) { "Há movimentações financeiras inválidas." }
+        require(transactions.all { it.scenarioId in scenarioIds && it.amountMinor > 0 && it.currency in listOf("BRL", "EUR") && it.kind in TransactionKind.entries.map { kind -> kind.name } }) { "Há movimentações financeiras inválidas." }
         val budget = rows("budget").objects().map { BudgetItemEntity(it.getLong("id"), it.getLong("scenarioId"), it.getString("name"), it.getString("category"), it.getLong("amountMinor"), it.getString("currency"), it.getBoolean("recurring"), it.getString("note")) }
-        require(budget.all { it.scenarioId == DEFAULT_SCENARIO_ID && it.amountMinor > 0 && it.currency in listOf("BRL", "EUR") && it.name.isNotBlank() }) { "Há itens de orçamento inválidos." }
+        require(budget.all { it.scenarioId in scenarioIds && it.amountMinor > 0 && it.currency in listOf("BRL", "EUR") && it.name.isNotBlank() }) { "Há itens de orçamento inválidos." }
         val rates = rows("exchangeRates").objects().map { ManualExchangeRateEntity(it.getLong("id"), it.getLong("scenarioId"), it.getLong("brlPerEurMinor"), it.getLong("quotedAtEpochDay"), it.getString("source"), it.getString("note")) }
-        require(rates.all { it.scenarioId == DEFAULT_SCENARIO_ID && it.brlPerEurMinor > 0 }) { "Há cotações inválidas." }
+        require(rates.all { it.scenarioId in scenarioIds && it.brlPerEurMinor > 0 }) { "Há cotações inválidas." }
         val records = rows("journeyRecords").objects().map { JourneyRecordEntity(it.getLong("id"), it.getString("recordType"), it.getString("title"), it.getString("details"), it.getString("status"), it.nullableLong("dueDateEpochDay"), it.getLong("updatedAtMillis")) }
         require(records.all { it.recordType.isNotBlank() && it.title.isNotBlank() }) { "Há registros sem categoria ou título." }
         val reviews = rows("quarterlyReviews").objects().map { QuarterlyReviewEntity(it.getLong("id"), it.getLong("reviewedAtEpochDay"), it.getString("answers"), it.getString("priorities"), it.getString("risk")) }
@@ -186,6 +212,7 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
 
     suspend fun initialize() = database.withTransaction {
         scenarioDao.insertIfMissing(MigrationScenarioEntity(name = "Plano principal", destination = ""))
+        if (scenarioDao.getActive() == null) scenarioDao.save((scenarioDao.get(DEFAULT_SCENARIO_ID) ?: MigrationScenarioEntity(name = "Plano principal", destination = "")).copy(active = true))
         if (phaseDao.countForScenario(DEFAULT_SCENARIO_ID) == 0) {
             phaseDao.insertAll(
                 listOf(
@@ -203,7 +230,7 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         taskDao.save(
             PlanTaskEntity(
                 id = task.id,
-                scenarioId = DEFAULT_SCENARIO_ID,
+                scenarioId = activeId(),
                 phaseId = task.phaseId,
                 title = task.title,
                 description = task.description,
@@ -219,12 +246,12 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
         )
     }
 
-    suspend fun deleteTask(id: Long) = taskDao.delete(id, DEFAULT_SCENARIO_ID)
+    suspend fun deleteTask(id: Long) = taskDao.delete(id, activeId())
 
     suspend fun saveReserve(reserve: ReserveItem) {
         reserveDao.save(
             FinancialReserveEntity(
-                scenarioId = DEFAULT_SCENARIO_ID,
+                scenarioId = activeId(),
                 currency = reserve.currency,
                 balanceMinor = reserve.balanceMinor,
                 goalMinor = reserve.goalMinor,
@@ -234,7 +261,7 @@ class RotaEuropaRepository(private val database: RotaEuropaDatabase) {
     }
 
     suspend fun saveTargetDate(epochDay: Long?) {
-        val current = scenarioDao.get(DEFAULT_SCENARIO_ID)
+        val current = scenarioDao.getActive()
             ?: MigrationScenarioEntity(name = "Plano principal", destination = "")
         scenarioDao.save(current.copy(targetDateEpochDay = epochDay))
     }

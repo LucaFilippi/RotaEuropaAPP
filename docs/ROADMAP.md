@@ -19,15 +19,15 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Testes das regras de progresso e finanças (6 testes unitários).
 - Critério central: dados cadastrados permanecem após fechar e abrir o app.
 
-## Fase 2 — Planejamento financeiro (Em andamento)
+## Fase 2 — Planejamento financeiro (Concluído)
 
 - [x] Histórico de aportes e retiradas; operações atualizam a reserva na moeda configurada.
 - [x] Orçamento com custos únicos/recorrentes e categorias iniciais; valores separados por moeda.
 - [x] Cotação manual BRL/EUR com origem/data e conversão estimada explícita.
 - [x] Projeção até a data-alvo, incluindo custos únicos na moeda da reserva.
 - [x] Comparação rápida de metas de € 8 mil, € 10 mil e € 12 mil.
-- [ ] Cenários independentes editáveis e persistidos; os valores rápidos ainda não são cenários salvos.
-- [ ] Gráficos essenciais.
+- [x] Cenários financeiros independentes editáveis e persistidos, com troca do cenário ativo e dados isolados por cenário.
+- [x] Gráfico da evolução projetada da reserva nos próximos seis meses.
 - [x] Testes unitários de cotação, conversão e projeção adicionados.
 
 ## Fase 3 — Carreira e estudos (Em andamento)
@@ -55,4 +55,4 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 
 ## Próximo incremento
 
-Próximo: executar build/testes depois da última alteração de conversão BRL↔EUR; validar backup e migração Room no emulador; depois implementar cenários persistidos, notificações e campos especializados das Fases 3–4.
+Fase 2 concluída em 30/10/2026 após validar `test assembleDebug`. A Fase 3 não foi iniciada nesta entrega e depende de autorização explícita do usuário.
