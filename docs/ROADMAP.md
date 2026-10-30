@@ -59,9 +59,9 @@ Estados: **Preparação**, **Pendente**, **Em andamento**, **Concluído**. Uma f
 - [x] Migração Room 1→2 criada sem apagar dados existentes.
 - [x] Mesclagem de backup JSON validada antes de adicionar cenários e registros sem remover os dados locais.
 - [x] Teste instrumentado da migração 1→2 adicionado e compilado.
-- [x] `connectedAndroidTest` passou com 4 testes instrumentados no Pixel 10/API 36 (migração, persistência, mesclagem e contexto).
-- [ ] Validação visual/acessibilidade final em emulador/aparelho; o teste Compose automatizado está bloqueado pela versão atual do Espresso/API 36.
+- [x] `connectedAndroidTest` passou com 5 testes instrumentados no Pixel 10/API 36 (migração, persistência, mesclagem, contexto e navegação/labels legíveis).
+- [ ] Validação visual/acessibilidade manual final em emulador/aparelho.
 
 ## Próximo incremento
 
-Fases 2–5 foram concluídas em 30/10/2026. A compilação, os testes unitários e 4 testes instrumentados da Fase 6 passaram. A validação visual/acessibilidade manual continua pendente.
+Fases 2–6 foram concluídas em 30/10/2026. Compilação, testes unitários e 5 testes instrumentados passaram. A inspeção visual/acessibilidade manual continua pendente.
