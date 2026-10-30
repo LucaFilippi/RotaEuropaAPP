@@ -20,17 +20,20 @@ Data de registro: 30/10/2026
 - Branch de integração: `develop` (`a53d973`, baseline salvo).
 - Branch ativa: `feature/fases-2-6` (continuação desta entrega).
 - Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
+- Commit mais recente no início desta retomada: `b756c73` (`docs: confirm GitHub branches and handoff`).
+- Build e testes unitários executados com sucesso após os últimos ajustes (`test assembleDebug`).
+- APK atualizado salvo em `outputs/ROTA-EUROPA-1.1-debug.apk` e no alias `outputs/ROTA-EUROPA-debug.apk`.
+- SHA-256 do APK: `26683542A46155892512D16D13F042D08AAB6F63CBAEF2BBDF982CAD7F054A7C`.
+- `apksigner verify` passou. A assinatura foi comparada com a versão anterior e com a chave debug local, preservando a possibilidade de atualização no mesmo aparelho.
 - Continue novas entregas em branches `feature/*`; integre em `develop` e reserve `main` para a versão final.
 
 ## Próximas ações prioritárias
 
-1. Executar `gradlew.bat -g .gradle-user-home test assembleDebug --console=plain --no-daemon` após os últimos ajustes.
-2. Copiar `app/build/outputs/apk/debug/app-debug.apk` para `outputs/ROTA-EUROPA-1.1-debug.apk`.
-3. Criar branch/commit e publicar a branch no remoto conforme pedido.
-4. Testar migração Room 1→2 e instalação de atualização no Pixel 10 ou celular conectado.
-5. Abrir a pasta específica do projeto no Android Studio se ainda estiver na tela errada.
-6. Continuar os itens pendentes da Fase 2 (cenários independentes/gráficos), Fases 3–4 (campos especializados), Fase 5 (notificações/prontidão) e Fase 6 (mesclagem/testes/acessibilidade).
+1. Instalar o APK acima no Pixel 10 ou celular conectado e validar atualização sobre a versão existente.
+2. Testar migração Room 1→2 com dados existentes no dispositivo/emulador.
+3. Abrir no Android Studio a pasta específica do projeto caso ainda não esteja aberta: `C:\Users\user\Documents\Codex\2026-10-29\c\rota-europa`.
+4. Continuar os itens pendentes da Fase 2 (cenários independentes/gráficos), Fases 3–4 (campos especializados), Fase 5 (notificações/prontidão) e Fase 6 (mesclagem/testes/acessibilidade).
 
 ## Limitação conhecida
 
-O emulador não iniciou nesta sessão: a sandbox bloqueou escrita em `%USERPROFILE%\.android\emu-last-feature-flags.protobuf.lock`. Não apagar `.android`, o AVD, o banco do app ou a chave de assinatura. A próxima execução pode solicitar acesso de escrita pontual à pasta do AVD/estado do emulador.
+O emulador não iniciou nesta sessão: a sandbox bloqueou escrita em `%USERPROFILE%\.android\emu-last-feature-flags.protobuf.lock`. `adb devices` não mostrou dispositivos conectados. A abertura do projeto na janela do Android Studio também não foi confirmada. Não apagar `.android`, o AVD, o banco do app ou a chave de assinatura. A próxima execução pode solicitar acesso de escrita pontual à pasta do AVD/estado do emulador.
