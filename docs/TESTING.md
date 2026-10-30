@@ -14,4 +14,4 @@ Os testes unitários em `app/src/test` cobrem progresso ponderado e cancelamento
 
 ## Resultado desta sessão
 
-`test assembleDebug assembleDebugAndroidTest connectedAndroidTest` passou na versão 1.3. No AVD Pixel 10/API 36, 4 testes instrumentados passaram, cobrindo migração 1→2 sem perda, persistência, mesclagem de cenário e contexto do app. O teste Compose de navegação acessível falhou antes da asserção por incompatibilidade do Espresso 3.5.1 com o método removido `InputManager.getInstance`; a inspeção visual/acessibilidade segue pendente. Atualize o stack Espresso antes de reintroduzir esse teste automatizado.
+`test assembleDebug assembleDebugAndroidTest connectedAndroidTest` passou na versão 1.3. No AVD Pixel 10/API 36, 5 testes instrumentados passaram, cobrindo migração 1→2 sem perda, persistência, mesclagem de cenário, contexto do app e navegação com labels legíveis. O Espresso foi atualizado para 3.7.0, resolvendo a incompatibilidade do teste Compose no Android 16. A inspeção visual/acessibilidade manual segue pendente.
