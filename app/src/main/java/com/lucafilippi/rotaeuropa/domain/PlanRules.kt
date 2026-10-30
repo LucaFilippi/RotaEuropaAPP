@@ -126,3 +126,24 @@ data class ScenarioItem(
     val active: Boolean = true,
     val id: Long = 1L,
 )
+
+data class ReadinessSummary(val score: Int, val blockers: List<String>)
+
+fun calculateReadiness(
+    destinationConfigured: Boolean,
+    targetDateConfigured: Boolean,
+    reserveGoalConfigured: Boolean,
+    reserveGoalReached: Boolean,
+    requiredTasksComplete: Boolean,
+    documentsConfigured: Boolean,
+    requiredDocumentsComplete: Boolean,
+): ReadinessSummary {
+    val checks = listOf(
+        destinationConfigured to "Defina o destino principal.",
+        targetDateConfigured to "Defina uma data-alvo.",
+        (reserveGoalConfigured && reserveGoalReached) to "A reserva ainda não alcançou a meta.",
+        requiredTasksComplete to "Conclua as tarefas obrigatórias em aberto.",
+        (documentsConfigured && requiredDocumentsComplete) to "Revise o checklist de documentos obrigatórios.",
+    )
+    return ReadinessSummary(checks.count { it.first } * 20, checks.filterNot { it.first }.map { it.second })
+}

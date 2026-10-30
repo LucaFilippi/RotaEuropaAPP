@@ -101,6 +101,7 @@ fun RotaEuropaApp(state: AppUiState, viewModel: RotaEuropaViewModel) {
                     state = state,
                     onSaveRecord = viewModel::saveJourneyRecord,
                     onDeleteRecord = viewModel::deleteJourneyRecord,
+                    onChangeRecordStatus = viewModel::changeJourneyRecordStatus,
                     onSaveReview = viewModel::saveQuarterlyReview,
                     onOpenBackup = { navController.navigate("backup") },
                 )

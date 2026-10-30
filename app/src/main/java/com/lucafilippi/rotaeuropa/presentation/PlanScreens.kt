@@ -57,6 +57,7 @@ import com.lucafilippi.rotaeuropa.domain.TaskPriority
 import com.lucafilippi.rotaeuropa.domain.TaskStatus
 import com.lucafilippi.rotaeuropa.domain.calculateProgress
 import com.lucafilippi.rotaeuropa.domain.calculateReserveProjection
+import com.lucafilippi.rotaeuropa.domain.calculateReadiness
 import java.text.NumberFormat
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -137,6 +138,28 @@ fun OverviewScreen(
                 if (state.progress.pendingRequired > 0) {
                     Text("Ainda há requisitos obrigatórios pendentes. O percentual não indica prontidão para a mudança.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
                 }
+            }
+        }
+
+        val requiredDocuments = state.extendedData.journeyRecords.filter { record ->
+            record.recordType == "document" && record.details.lineSequence().any { line -> line.startsWith("Obrigatório para qual etapa?:") && line.substringAfter(':').isNotBlank() }
+        }
+        val readiness = calculateReadiness(
+            destinationConfigured = state.scenario.destination.isNotBlank(),
+            targetDateConfigured = state.scenario.targetDateEpochDay?.let { it > LocalDate.now().toEpochDay() } == true,
+            reserveGoalConfigured = state.reserve.goalMinor > 0,
+            reserveGoalReached = state.reserve.goalMinor > 0 && state.reserve.balanceMinor >= state.reserve.goalMinor,
+            requiredTasksComplete = state.progress.pendingRequired == 0,
+            documentsConfigured = requiredDocuments.isNotEmpty(),
+            requiredDocumentsComplete = requiredDocuments.isNotEmpty() && requiredDocuments.all { it.status == "Concluído" },
+        )
+        Card(shape = RoundedCornerShape(22.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
+            Column(Modifier.fillMaxWidth().padding(18.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("Indicador de prontidão", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text("${readiness.score}%", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Bold)
+                LinearProgressIndicator(progress = { readiness.score / 100f }, modifier = Modifier.fillMaxWidth())
+                Text("Checklist orientativo por cenário; não substitui validação oficial de visto, documentos ou orçamento.", style = MaterialTheme.typography.bodySmall)
+                readiness.blockers.take(3).forEach { Text("• $it", style = MaterialTheme.typography.bodySmall) }
             }
         }
 

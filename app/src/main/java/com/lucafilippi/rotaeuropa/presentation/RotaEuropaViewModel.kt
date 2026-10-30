@@ -205,6 +205,11 @@ class RotaEuropaViewModel(
 
     fun deleteJourneyRecord(id: Long) { viewModelScope.launch { runCatching { repository.deleteJourneyRecord(id) }.onFailure { setError("Não foi possível remover o registro.") } } }
 
+    fun changeJourneyRecordStatus(id: Long, status: String) {
+        val current = _uiState.value.extendedData.journeyRecords.firstOrNull { it.id == id } ?: return
+        viewModelScope.launch { runCatching { repository.saveJourneyRecord(current.copy(status = status, updatedAtMillis = System.currentTimeMillis())) }.onFailure { setError("Não foi possível atualizar o status.") } }
+    }
+
     fun saveQuarterlyReview(answers: String, priorities: String, risk: String) {
         if (priorities.isBlank()) return setError("Registre pelo menos uma prioridade para o próximo trimestre.")
         viewModelScope.launch {
@@ -226,6 +231,14 @@ class RotaEuropaViewModel(
             runCatching { repository.replaceFromJsonBackup(json) }
                 .onSuccess { clearError() }
                 .onFailure { setError("Backup não importado: ${it.message ?: "arquivo inválido"}") }
+        }
+    }
+
+    fun mergeJsonBackup(json: String) {
+        viewModelScope.launch {
+            runCatching { repository.mergeFromJsonBackup(json) }
+                .onSuccess { clearError() }
+                .onFailure { setError("Backup não mesclado: ${it.message ?: "arquivo inválido"}") }
         }
     }
 

@@ -13,11 +13,13 @@ import com.lucafilippi.rotaeuropa.presentation.RotaEuropaViewModel
 import com.lucafilippi.rotaeuropa.presentation.RotaEuropaViewModelFactory
 import com.lucafilippi.rotaeuropa.presentation.RotaEuropaApp
 import com.lucafilippi.rotaeuropa.ui.theme.ROTAEUROPATheme
+import com.lucafilippi.rotaeuropa.LocalReminderNotifications
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        LocalReminderNotifications.createChannel(this)
         val database = RotaEuropaDatabase.get(applicationContext)
         val factory = RotaEuropaViewModelFactory(
             RotaEuropaRepository(database),
