@@ -16,17 +16,18 @@ Data de registro: 30/10/2026
 - Room v2 com migração explícita 1→2.
 - `versionCode=3`, `versionName=1.2`, `applicationId` preservado.
 - O certificado SHA-256 do APK anterior e do novo build foi comparado e é o mesmo: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543`.
-- Branch de integração: `develop` (`a53d973`, baseline salvo).
+- Branch de integração: `develop` (`7dda3cd`, Fase 2 integrada e publicada).
 - Branch ativa: `feature/fases-2-6` (continuação desta entrega).
 - Remoto `origin` configurado; `develop` e `feature/fases-2-6` publicados e rastreando o GitHub.
-- Commit final da Fase 2 será registrado no fim desta sessão.
+- Commit da Fase 2: `6c2ad36` (`feat(finance): complete phase 2 planning`).
+- Merge integrado: `7dda3cd`; branches `develop` e `main` publicadas no GitHub no mesmo estado.
 - Build e testes unitários executados com sucesso após os últimos ajustes (`test assembleDebug`).
 - APK atualizado salvo em `C:\Users\user\Documents\Codex\2026-10-29\c\outputs\ROTA-EUROPA-1.2-debug.apk` e no alias `ROTA-EUROPA-debug.apk`.
 - SHA-256 do APK: `91507A127848324A9C514596D2DAFE83D1FA3CAD93CD93CE823EC53A125365AF`.
 - `apksigner verify` passou. A assinatura foi comparada com a versão anterior e com a chave debug local, preservando a possibilidade de atualização no mesmo aparelho.
 - SHA-256 do certificado: `7f67ca43f96e3f2c52142269864856d9b60afb4240de3331cb7f4d5d39ef4543` (igual ao APK 1.1).
 - Fase 2 adicionou cenários financeiros locais isolados, gráfico de projeção de seis meses e backup JSON compatível com múltiplos cenários.
-- Fase 2 foi commitada em `feature/fases-2-6`, mesclada em `develop`, e `main` foi criada no estado integrado. Não iniciar Fase 3 sem autorização do usuário.
+- Fase 2 foi commitada em `feature/fases-2-6`, mesclada em `develop`, e `main` foi criada/alinhada ao estado integrado. Não iniciar Fase 3 sem autorização do usuário.
 
 ## Próximas ações prioritárias
 
